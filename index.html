@@ -289,6 +289,10 @@
   body.locked .player .name { pointer-events: none; cursor: default; }
   body:not(.locked) .lock-btn { border-color: var(--zuid); }
 
+  /* Admin-only: verborgen voor IEDEREEN behalve de ingelogde beheerder,
+     ook nadat de content op 16 september voor iedereen zichtbaar wordt. */
+  body.locked .admin-only { display: none !important; }
+
   .gated-content { display: none; }
   .locked-message { display: none; }
   body.content-hidden .locked-message {
@@ -346,6 +350,27 @@
   }
   .add-row input[type=text]::placeholder { color: var(--ink-dim); font-weight: 400; }
   .add-row input[type=text]:focus, .timer-controls input:focus { outline: 2px solid var(--blue-bright); outline-offset: 1px; }
+
+  .bulk-add {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+  .bulk-add textarea {
+    background: var(--card);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    resize: vertical;
+    min-height: 64px;
+  }
+  .bulk-add textarea::placeholder { color: var(--ink-dim); font-family: 'Inter', sans-serif; }
+  .bulk-add textarea:focus { outline: 2px solid var(--blue-bright); outline-offset: 1px; }
+  .bulk-add button { align-self: flex-start; }
 
   .pool-note { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--ink-dim); margin: -12px 0 20px; line-height: 1.5; }
 
@@ -535,6 +560,17 @@
     <button id="addBtn" class="primary">Toevoegen</button>
     <button id="assignBtn">Verdeel teams</button>
   </div>
+
+  <div class="bulk-add">
+    <textarea id="bulkInput" placeholder="Plak hier meerdere namen tegelijk — één per regel, of gescheiden door komma's/spaties…" rows="3"></textarea>
+    <button id="bulkAddBtn" class="primary">Voeg alles toe</button>
+  </div>
+
+  <div class="add-row admin-only" id="adminAssignRow">
+    <button id="assignOneBtn">🎲 Verdeel 1 speler</button>
+    <button id="assignFourBtn">🎲 Verdeel 4 (1 per eiland)</button>
+  </div>
+
   <div class="pool-note" id="poolNote"></div>
 
   <div class="compass">
@@ -610,6 +646,26 @@
     save(); render();
   }
 
+  function addPlayersBulk(text) {
+    const names = text
+      .split(/[\n,]+/)
+      .flatMap(chunk => chunk.trim().split(/\s+/))
+      .map(n => n.trim())
+      .filter(n => n.length > 0);
+
+    let added = 0, skipped = 0;
+    names.forEach(name => {
+      if (players.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+        skipped++;
+        return;
+      }
+      players.push({ id: uid(), name, team: null, alive: true });
+      added++;
+    });
+    save(); render();
+    return { added, skipped };
+  }
+
   function removePlayer(id) {
     players = players.filter(p => p.id !== id);
     save(); render();
@@ -644,6 +700,29 @@
 
   function resetTeams() { players.forEach(p => p.team = null); save(); render(); }
   function clearAll() { players = []; save(); render(); }
+
+  function assignOne() {
+    const unassigned = players.filter(p => p.team === null);
+    if (unassigned.length === 0) { alert('Iedereen is al ingedeeld.'); return; }
+    const p = unassigned[Math.floor(Math.random() * unassigned.length)];
+    const counts = TEAMS.map(t => players.filter(pl => pl.team === t).length);
+    const min = Math.min(...counts);
+    const candidates = TEAMS.filter((t, i) => counts[i] === min);
+    p.team = candidates[Math.floor(Math.random() * candidates.length)];
+    save(); render();
+  }
+
+  function assignFour() {
+    const unassigned = shuffle(players.filter(p => p.team === null));
+    if (unassigned.length < 4) {
+      alert('Er moeten minstens 4 spelers nog niet ingedeeld zijn.');
+      return;
+    }
+    const four = unassigned.slice(0, 4);
+    const teamOrder = shuffle(TEAMS);
+    four.forEach((p, i) => { p.team = teamOrder[i]; });
+    save(); render();
+  }
 
   function playerRow(p) {
     const div = document.createElement('div');
@@ -705,7 +784,20 @@
     el('nameInput').focus();
   });
   el('nameInput').addEventListener('keydown', e => { if (e.key === 'Enter') el('addBtn').click(); });
+
+  el('bulkAddBtn').addEventListener('click', () => {
+    const text = el('bulkInput').value;
+    if (!text.trim()) return;
+    const { added, skipped } = addPlayersBulk(text);
+    el('bulkInput').value = '';
+    let msg = `${added} speler${added === 1 ? '' : 's'} toegevoegd.`;
+    if (skipped > 0) msg += ` (${skipped} overgeslagen, stonden al in de lijst.)`;
+    alert(msg);
+  });
+
   el('assignBtn').addEventListener('click', assignTeams);
+  el('assignOneBtn').addEventListener('click', assignOne);
+  el('assignFourBtn').addEventListener('click', assignFour);
   el('resetTeamsBtn').addEventListener('click', resetTeams);
   el('clearAllBtn').addEventListener('click', () => {
     if (confirm('Weet je zeker dat je alle spelers en teams wilt wissen?')) clearAll();
