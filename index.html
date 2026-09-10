@@ -221,10 +221,11 @@
   }
   .timer-display {
     position: absolute;
-    inset: 0;
+    inset: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
     font-family: 'Sora', sans-serif;
     font-weight: 800;
     font-variant-numeric: tabular-nums;
@@ -232,7 +233,18 @@
     color: #fff;
     text-shadow: 0 2px 18px rgba(0,0,0,0.6);
   }
+  .timer-display.long-format { font-size: 19px; letter-spacing: -0.02em; }
   .timer-controls { display: flex; gap: 10px; align-items: center; }
+  .timer-controls-days { gap: 8px; margin-top: -2px; }
+  .small-icon-btn {
+    width: auto;
+    height: 30px;
+    border-radius: 15px;
+    padding: 0 12px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 11.5px;
+  }
   .icon-btn {
     width: 40px; height: 40px;
     border-radius: 50%;
@@ -376,17 +388,12 @@
 
   .compass {
     display: grid;
-    grid-template-columns: 1fr 1.15fr 1fr;
-    grid-template-areas:
-      ".    noord .   "
-      "west center oost"
-      ".    zuid  .   ";
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
   }
   @media (max-width: 620px) {
     .compass {
       grid-template-columns: 1fr;
-      grid-template-areas: "noord" "oost" "zuid" "west" "center";
     }
     .scene h1 { font-size: 25px; }
   }
@@ -401,10 +408,10 @@
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 6px 22px rgba(0,0,0,0.22);
   }
-  .isle.noord { grid-area: noord; box-shadow: -3px 0 0 var(--noord) inset, 0 6px 22px rgba(0,0,0,0.22); }
-  .isle.oost  { grid-area: oost;  box-shadow: -3px 0 0 var(--oost)  inset, 0 6px 22px rgba(0,0,0,0.22); }
-  .isle.zuid  { grid-area: zuid;  box-shadow: -3px 0 0 var(--zuid)  inset, 0 6px 22px rgba(0,0,0,0.22); }
-  .isle.west  { grid-area: west;  box-shadow: -3px 0 0 var(--west)  inset, 0 6px 22px rgba(0,0,0,0.22); }
+  .isle.noord { box-shadow: -3px 0 0 var(--noord) inset, 0 6px 22px rgba(0,0,0,0.22); }
+  .isle.oost  { box-shadow: -3px 0 0 var(--oost)  inset, 0 6px 22px rgba(0,0,0,0.22); }
+  .isle.zuid  { box-shadow: -3px 0 0 var(--zuid)  inset, 0 6px 22px rgba(0,0,0,0.22); }
+  .isle.west  { box-shadow: -3px 0 0 var(--west)  inset, 0 6px 22px rgba(0,0,0,0.22); }
 
   .isle h2 {
     font-size: 16px; font-weight: 700; letter-spacing: 0.01em;
@@ -538,6 +545,10 @@
           <svg viewBox="0 0 24 24" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
         </button>
       </div>
+      <div class="timer-controls timer-controls-days">
+        <button id="timerMinusDay" class="icon-btn small-icon-btn" title="-1 dag">−1d</button>
+        <button id="timerPlusDay" class="icon-btn small-icon-btn" title="+1 dag">+1d</button>
+      </div>
     </div>
   </div>
 
@@ -547,67 +558,51 @@
 
 <div class="wrap">
 
-  <div class="locked-message" id="lockedMessage">
-    <div class="locked-icon">❄🔒</div>
-    <h2>16 september</h2>
-    <p>FrostSMP S3 — Eiland verdeling bekendmaking</p>
-  </div>
-
   <div class="gated-content" id="gatedContent">
 
-  <div class="add-row">
-    <input type="text" id="nameInput" placeholder="Minecraft naam toevoegen…" maxlength="30">
-    <button id="addBtn" class="primary">Toevoegen</button>
-    <button id="assignBtn">Verdeel teams</button>
-  </div>
-
-  <div class="bulk-add">
-    <textarea id="bulkInput" placeholder="Plak hier meerdere namen tegelijk — één per regel, of gescheiden door komma's/spaties…" rows="3"></textarea>
-    <button id="bulkAddBtn" class="primary">Voeg alles toe</button>
-  </div>
-
   <div class="add-row admin-only" id="adminAssignRow">
+    <button id="assignBtn">Verdeel teams</button>
     <button id="assignOneBtn">🎲 Verdeel 1 speler</button>
     <button id="assignFourBtn">🎲 Verdeel 4 (1 per eiland)</button>
   </div>
 
-  <div class="pool-note" id="poolNote"></div>
-
   <div class="compass">
     <div class="isle noord">
       <h2>❄ Noord</h2>
-      <div class="count" id="countNoord">0 spelers</div>
       <div class="player-list" id="listNoord"></div>
     </div>
     <div class="isle oost">
       <h2>❄ Oost</h2>
-      <div class="count" id="countOost">0 spelers</div>
       <div class="player-list" id="listOost"></div>
     </div>
     <div class="isle zuid">
       <h2>❄ Zuid</h2>
-      <div class="count" id="countZuid">0 spelers</div>
       <div class="player-list" id="listZuid"></div>
     </div>
     <div class="isle west">
       <h2>❄ West</h2>
-      <div class="count" id="countWest">0 spelers</div>
       <div class="player-list" id="listWest"></div>
-    </div>
-    <div class="center">
-      <div class="big"><span class="alive" id="aliveCount">0</span><span class="slash">/</span><span id="totalCount">0</span></div>
-      <div class="label">nog in leven</div>
-      <div class="big" style="font-size:16px;"><span class="dead" id="deadCount">0</span></div>
-      <div class="label">gestorven</div>
     </div>
   </div>
 
+  <!-- verborgen beheerhulp: namen toevoegen, blijft functioneel maar niet getoond -->
+  <div class="add-row admin-only" id="hiddenNameRow" style="display:none;">
+    <input type="text" id="nameInput" placeholder="Minecraft naam toevoegen…" maxlength="30">
+    <button id="addBtn" class="primary">Toevoegen</button>
+  </div>
+  <div class="bulk-add admin-only" id="hiddenBulkRow" style="display:none;">
+    <textarea id="bulkInput" placeholder="Plak hier meerdere namen tegelijk…" rows="3"></textarea>
+    <button id="bulkAddBtn" class="primary">Voeg alles toe</button>
+  </div>
+  <div class="pool-note" id="poolNote" style="display:none;"></div>
   <div class="pool" id="poolWrap" style="display:none;">
     <h2>NOG NIET VERDEELD</h2>
     <div class="player-list" id="listPool"></div>
   </div>
-
-  <footer class="actions">
+  <div id="aliveCountWrap" style="display:none;">
+    <span id="aliveCount">0</span><span id="totalCount">0</span><span id="deadCount">0</span>
+  </div>
+  <footer class="actions admin-only" id="hiddenFooter" style="display:none;">
     <button id="resetTeamsBtn">Teams opnieuw verdelen</button>
     <button id="clearAllBtn" class="danger">Alles wissen</button>
   </footer>
@@ -620,6 +615,7 @@
 (function() {
   const TEAMS = ['noord','oost','zuid','west'];
   const STORAGE_KEY = 'eilanden-tracker-state';
+  const LAUNCH_DATE = new Date('2026-09-10T08:00:00');
 
   let players = [];
   const el = id => document.getElementById(id);
@@ -748,7 +744,6 @@
       const list = el('list' + cap(t));
       list.innerHTML = '';
       const members = players.filter(p => p.team === t);
-      el('count' + cap(t)).textContent = members.length + (members.length === 1 ? ' speler' : ' spelers');
       if (members.length === 0) {
         const hint = document.createElement('div');
         hint.className = 'empty-hint';
@@ -804,18 +799,32 @@
   });
 
   let timerInterval = null;
-  let totalSeconds = 10 * 60;
-  let secondsLeft = 10 * 60;
+  const secondsUntilLaunch = Math.floor((LAUNCH_DATE.getTime() - Date.now()) / 1000);
+  const defaultSeconds = secondsUntilLaunch > 0 ? secondsUntilLaunch : 10 * 60;
+  let totalSeconds = defaultSeconds;
+  let secondsLeft = defaultSeconds;
   const RING_CIRCUMFERENCE = 326.7;
 
   function formatTime(s) {
-    const m = Math.floor(s / 60);
+    s = Math.max(0, s);
+    const days = Math.floor(s / 86400);
+    const hours = Math.floor((s % 86400) / 3600);
+    const m = Math.floor((s % 3600) / 60);
     const sec = s % 60;
+    if (days > 0) {
+      return `${days}d ${String(hours).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    }
+    if (hours > 0) {
+      return `${String(hours).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    }
     return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
   }
 
   function updateTimerDisplay() {
-    el('timerDisplay').textContent = formatTime(Math.max(secondsLeft, 0));
+    const s = Math.max(secondsLeft, 0);
+    const displayEl = el('timerDisplay');
+    displayEl.textContent = formatTime(s);
+    displayEl.classList.toggle('long-format', s >= 3600);
     el('timerBox').classList.toggle('done', secondsLeft <= 0);
     const ratio = totalSeconds > 0 ? Math.max(0, secondsLeft) / totalSeconds : 0;
     el('ringProgress').style.strokeDashoffset = RING_CIRCUMFERENCE * (1 - ratio);
@@ -859,12 +868,20 @@
 
   function adjustMinutes(delta) {
     if (timerInterval) return;
-    totalSeconds = Math.max(60, Math.min(180 * 60, totalSeconds + delta * 60));
+    totalSeconds = Math.max(60, totalSeconds + delta * 60);
+    secondsLeft = totalSeconds;
+    updateTimerDisplay();
+  }
+  function adjustDays(delta) {
+    if (timerInterval) return;
+    totalSeconds = Math.max(60, totalSeconds + delta * 86400);
     secondsLeft = totalSeconds;
     updateTimerDisplay();
   }
   el('timerMinus').addEventListener('click', () => adjustMinutes(-1));
   el('timerPlus').addEventListener('click', () => adjustMinutes(1));
+  el('timerMinusDay').addEventListener('click', () => adjustDays(-1));
+  el('timerPlusDay').addEventListener('click', () => adjustDays(1));
 
   function initSnow() {
     const field = el('sceneSnow');
@@ -893,7 +910,6 @@
   const PIN_HASH = '4751066d7a043bd3e297fad6e90a82389696f385ecc8fec4f251f8cd3c883850';
   const UNLOCK_KEY = 'frost-tracker-unlocked';
   const REVEAL_KEY = 'frost-tracker-reveal-all';
-  const LAUNCH_DATE = new Date('2026-09-16T00:00:00');
 
   let locked = true;      // persoonlijk: mag DEZE browser bewerken (timer/spelers)?
   let globalReveal = false; // gedeeld: is de content voor IEDEREEN vrijgegeven?
