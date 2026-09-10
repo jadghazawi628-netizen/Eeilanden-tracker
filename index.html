@@ -21,8 +21,9 @@
 
     --noord: #4ca8dc;
     --oost: #c58af0;
-    --zuid: #4fd6a8;
-    --west: #7d8cf0;
+    --zuid: #e0574c;
+    --west: #e8c547;
+    --accent-positive: #4fd6a8;
 
     --heart-alive: #e05a4e;
     --heart-dead: #4a5568;
@@ -184,90 +185,22 @@
     text-shadow: 0 1px 10px rgba(0,0,0,0.55);
   }
 
-  /* ===== Ring timer ===== */
-  .timer-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-  }
-  .timer-ring {
-    position: relative;
-    width: 168px;
-    height: 168px;
-    filter: drop-shadow(0 10px 28px rgba(0,0,0,0.5));
-  }
-  .timer-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-  .ring-track {
-    fill: rgba(10,16,24,0.55);
-    stroke: rgba(255,255,255,0.14);
-    stroke-width: 6;
-  }
-  .ring-progress {
-    fill: none;
-    stroke: url(#ringGrad);
-    stroke-width: 7;
-    stroke-linecap: round;
-    stroke-dasharray: 326.7;
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset 1s linear;
-    filter: drop-shadow(0 0 8px rgba(111,195,240,0.75));
-  }
-  .timer-box.done .ring-progress { stroke: var(--red); filter: drop-shadow(0 0 10px rgba(224,90,78,0.85)); }
-  .timer-box.done .timer-ring { animation: pulse-ring 1s infinite; }
-  @keyframes pulse-ring {
-    0%,100% { filter: drop-shadow(0 8px 24px rgba(0,0,0,0.45)); }
-    50% { filter: drop-shadow(0 0 22px rgba(224,90,78,0.6)); }
-  }
-  .timer-display {
-    position: absolute;
-    inset: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+  /* ===== Openingstekst ===== */
+  .opens-note {
     font-family: 'Sora', sans-serif;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-    font-size: 30px;
-    color: #fff;
-    text-shadow: 0 2px 18px rgba(0,0,0,0.6);
-  }
-  .timer-display.long-format { font-size: 19px; letter-spacing: -0.02em; }
-  .timer-controls { display: flex; gap: 10px; align-items: center; }
-  .timer-controls-days { gap: 8px; margin-top: -2px; }
-  .small-icon-btn {
-    width: auto;
-    height: 30px;
-    border-radius: 15px;
-    padding: 0 12px;
-    font-family: 'Inter', sans-serif;
     font-weight: 700;
-    font-size: 11.5px;
-  }
-  .icon-btn {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.18);
-    background: rgba(20,26,34,0.6);
-    backdrop-filter: blur(6px);
+    font-size: 17px;
     color: #fff;
-    font-size: 15px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    padding: 0;
-    transition: background .15s, border-color .15s, transform .1s, box-shadow .15s;
+    background: rgba(20,26,34,0.55);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 999px;
+    padding: 10px 22px;
+    display: inline-block;
+    text-shadow: 0 2px 14px rgba(0,0,0,0.5);
   }
-  .icon-btn:hover { border-color: var(--blue-bright); box-shadow: 0 0 14px rgba(76,168,220,0.4); }
-  .icon-btn:active { transform: scale(0.92); }
-  .icon-btn.primary {
-    width: 48px; height: 48px;
-    font-size: 16px;
-    background: var(--blue);
-    border-color: var(--blue);
-  }
-  .icon-btn.primary:hover { background: var(--blue-bright); }
-  .icon-btn.primary.playing { background: rgba(224,90,78,0.85); border-color: var(--red); }
+  .opens-note strong { color: var(--blue-bright); }
 
   /* ===== Lock ===== */
   .lock-btn {
@@ -290,16 +223,11 @@
   .lock-btn:hover { border-color: var(--blue-bright); box-shadow: 0 0 14px rgba(76,168,220,0.4); }
   .lock-btn:active { transform: scale(0.94); }
   .reveal-btn { right: 74px; display: none; }
-  .reveal-btn.active { border-color: var(--zuid); box-shadow: 0 0 14px rgba(79,214,168,0.4); }
+  .reveal-btn.active { border-color: var(--accent-positive); box-shadow: 0 0 14px rgba(79,214,168,0.4); }
 
-  body.locked .timer-controls {
-    pointer-events: none;
-    opacity: 0.4;
-    filter: grayscale(0.4);
-  }
   body.locked .player .remove { display: none; }
   body.locked .player .name { pointer-events: none; cursor: default; }
-  body:not(.locked) .lock-btn { border-color: var(--zuid); }
+  body:not(.locked) .lock-btn { border-color: var(--accent-positive); }
 
   /* Admin-only: verborgen voor IEDEREEN behalve de ingelogde beheerder,
      ook nadat de content op 16 september voor iedereen zichtbaar wordt. */
@@ -344,6 +272,118 @@
   button.danger:hover { background: var(--red); color: #1a0808; }
   button.small { padding: 5px 10px; font-size: 11.5px; border-radius: 7px; }
 
+  /* ===== Modals ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(6,10,16,0.72);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-card {
+    background: rgba(20,26,34,0.94);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 22px;
+    width: 100%;
+    max-width: 320px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+    animation: modal-pop .18s ease-out;
+  }
+  @keyframes modal-pop {
+    from { transform: scale(0.92); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+  .modal-card h3 {
+    margin: 0 0 14px;
+    font-family: 'Sora', sans-serif;
+    font-size: 17px;
+    color: #fff;
+    text-align: center;
+  }
+  .modal-section-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-dim);
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .modal-islands {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .modal-islands button {
+    padding: 10px 8px;
+    font-size: 12.5px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+  }
+  .modal-islands button.island-noord { border-color: var(--noord); color: var(--noord); }
+  .modal-islands button.island-oost  { border-color: var(--oost);  color: var(--oost); }
+  .modal-islands button.island-zuid  { border-color: var(--zuid);  color: var(--zuid); }
+  .modal-islands button.island-west  { border-color: var(--west);  color: var(--west); }
+  .modal-islands button.current {
+    background: rgba(255,255,255,0.14);
+    font-weight: 700;
+  }
+  .modal-actions { display: flex; gap: 8px; }
+  .modal-actions button { flex: 1; }
+
+  .spin-card { text-align: center; max-width: 280px; }
+  .spin-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-dim);
+    margin-bottom: 10px;
+  }
+  .spin-name {
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    font-size: 26px;
+    color: #fff;
+    margin-bottom: 8px;
+    min-height: 32px;
+    animation: spin-jitter .08s linear infinite;
+  }
+  .spin-island {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    color: var(--ink-dim);
+    transition: color .1s;
+  }
+  .spin-island.island-noord { color: var(--noord); }
+  .spin-island.island-oost  { color: var(--oost); }
+  .spin-island.island-zuid  { color: var(--zuid); }
+  .spin-island.island-west  { color: var(--west); }
+  .spin-island.spin-final {
+    font-size: 17px;
+    animation: spin-final-pop .35s ease-out;
+  }
+  @keyframes spin-jitter {
+    from { transform: translateY(0px); }
+    to   { transform: translateY(-1px); }
+  }
+  @keyframes spin-final-pop {
+    0%   { transform: scale(0.7); opacity: 0.4; }
+    60%  { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+  .spin-name.spin-done { animation: none; }
+
   /* ===== Main body below the scene ===== */
   .wrap {
     position: relative;
@@ -361,7 +401,7 @@
     font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
   }
   .add-row input[type=text]::placeholder { color: var(--ink-dim); font-weight: 400; }
-  .add-row input[type=text]:focus, .timer-controls input:focus { outline: 2px solid var(--blue-bright); outline-offset: 1px; }
+  .add-row input[type=text]:focus { outline: 2px solid var(--blue-bright); outline-offset: 1px; }
 
   .bulk-add {
     display: flex;
@@ -468,7 +508,7 @@
     font-variant-numeric: tabular-nums;
     font-size: 28px;
   }
-  .center .big .alive { color: var(--zuid); }
+  .center .big .alive { color: var(--accent-positive); }
   .center .big .slash { color: var(--ink-dim); margin: 0 4px; font-weight: 400; }
   .center .big .dead { color: var(--heart-alive); }
   .center .label {
@@ -516,40 +556,7 @@
     <h1>Eiland indeling <span class="accent">FrostSMP S3</span></h1>
     <p class="lead">Eén wereld. Vier eilanden. Houd bij wie er nog leeft — Noord, Oost, Zuid of West.</p>
 
-    <div class="timer-box" id="timerBox">
-      <div class="timer-ring">
-        <svg viewBox="0 0 120 120" class="ring-svg">
-          <defs>
-            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#9fdcff"/>
-              <stop offset="100%" stop-color="#4ca8dc"/>
-            </linearGradient>
-          </defs>
-          <circle class="ring-track" cx="60" cy="60" r="52"/>
-          <circle class="ring-progress" id="ringProgress" cx="60" cy="60" r="52"/>
-        </svg>
-        <div class="timer-display" id="timerDisplay">10:00</div>
-      </div>
-      <div class="timer-controls">
-        <button id="timerMinus" class="icon-btn" title="-1 min">
-          <svg viewBox="0 0 24 24" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-        </button>
-        <button id="timerStart" class="icon-btn primary" title="Start">
-          <svg id="playIcon" viewBox="0 0 24 24" width="18" height="18"><polygon points="6,4 20,12 6,20" fill="currentColor"/></svg>
-          <svg id="pauseIcon" viewBox="0 0 24 24" width="18" height="18" style="display:none"><rect x="5" y="4" width="5" height="16" rx="1.5" fill="currentColor"/><rect x="14" y="4" width="5" height="16" rx="1.5" fill="currentColor"/></svg>
-        </button>
-        <button id="timerReset" class="icon-btn" title="Reset">
-          <svg viewBox="0 0 24 24" width="16" height="16"><path d="M4 12a8 8 0 1 1 2.7 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><polyline points="4,17 4,12 9,12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <button id="timerPlus" class="icon-btn" title="+1 min">
-          <svg viewBox="0 0 24 24" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-        </button>
-      </div>
-      <div class="timer-controls timer-controls-days">
-        <button id="timerMinusDay" class="icon-btn small-icon-btn" title="-1 dag">−1d</button>
-        <button id="timerPlusDay" class="icon-btn small-icon-btn" title="+1 dag">+1d</button>
-      </div>
-    </div>
+    <div class="opens-note">Gaat om <strong>9 uur</strong> open</div>
   </div>
 
   <button id="lockBtn" class="lock-btn" title="Vergrendelen/ontgrendelen">🔒</button>
@@ -586,12 +593,12 @@
   </div>
 
   <!-- verborgen beheerhulp: namen toevoegen, blijft functioneel maar niet getoond -->
-  <div class="add-row admin-only" id="hiddenNameRow" style="display:none;">
+  <div class="add-row admin-only" id="hiddenNameRow">
     <input type="text" id="nameInput" placeholder="Minecraft naam toevoegen…" maxlength="30">
     <button id="addBtn" class="primary">Toevoegen</button>
   </div>
-  <div class="bulk-add admin-only" id="hiddenBulkRow" style="display:none;">
-    <textarea id="bulkInput" placeholder="Plak hier meerdere namen tegelijk…" rows="3"></textarea>
+  <div class="bulk-add admin-only" id="hiddenBulkRow">
+    <textarea id="bulkInput" placeholder="Plak hier meerdere namen tegelijk (op nieuwe regel of gescheiden door komma's)…" rows="3"></textarea>
     <button id="bulkAddBtn" class="primary">Voeg alles toe</button>
   </div>
   <div class="pool-note" id="poolNote" style="display:none;"></div>
@@ -611,11 +618,32 @@
 
 </div>
 
+<div class="modal-overlay" id="playerModalOverlay">
+  <div class="modal-card">
+    <h3 id="playerModalName">Naam</h3>
+    <div class="modal-section-label">Zet op eiland</div>
+    <div class="modal-islands" id="playerModalIslands"></div>
+    <div class="modal-actions">
+      <button class="danger" id="playerModalDelete">Verwijderen</button>
+      <button id="playerModalClose">Sluiten</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="spinOverlay">
+  <div class="modal-card spin-card">
+    <div class="spin-label">Verdelen…</div>
+    <div class="spin-name" id="spinName">—</div>
+    <div class="spin-island" id="spinIsland">—</div>
+  </div>
+</div>
+
 <script>
 (function() {
   const TEAMS = ['noord','oost','zuid','west'];
+  const ISLAND_LABELS = { noord: '❄ Noord', oost: '❄ Oost', zuid: '❄ Zuid', west: '❄ West' };
   const STORAGE_KEY = 'eilanden-tracker-state';
-  const LAUNCH_DATE = new Date('2026-09-10T08:00:00');
+  const LAUNCH_DATE = new Date('2026-09-10T09:00:00');
 
   let players = [];
   const el = id => document.getElementById(id);
@@ -708,6 +736,61 @@
     save(); render();
   }
 
+  let spinRunning = false;
+  function showSpinAndAssignOne() {
+    if (spinRunning) return;
+    const unassigned = players.filter(p => p.team === null);
+    if (unassigned.length === 0) { alert('Iedereen is al ingedeeld.'); return; }
+
+    const counts = TEAMS.map(t => players.filter(pl => pl.team === t).length);
+    const min = Math.min(...counts);
+    const candidates = TEAMS.filter((t, i) => counts[i] === min);
+    const finalPlayer = unassigned[Math.floor(Math.random() * unassigned.length)];
+    const finalTeam = candidates[Math.floor(Math.random() * candidates.length)];
+
+    const namePool = unassigned.length ? unassigned : players;
+    const overlay = el('spinOverlay');
+    const nameEl = el('spinName');
+    const islandEl = el('spinIsland');
+
+    spinRunning = true;
+    el('assignOneBtn').disabled = true;
+    nameEl.classList.remove('spin-done');
+    islandEl.classList.remove('spin-final');
+    overlay.classList.add('open');
+
+    let delay = 55;
+    let elapsed = 0;
+    const totalDuration = 1600;
+
+    function tick() {
+      const randP = namePool[Math.floor(Math.random() * namePool.length)];
+      const randT = TEAMS[Math.floor(Math.random() * TEAMS.length)];
+      nameEl.textContent = randP.name;
+      islandEl.textContent = ISLAND_LABELS[randT];
+      islandEl.className = 'spin-island island-' + randT;
+      elapsed += delay;
+      delay = Math.min(delay * 1.15, 240);
+
+      if (elapsed < totalDuration) {
+        setTimeout(tick, delay);
+      } else {
+        nameEl.textContent = finalPlayer.name;
+        nameEl.classList.add('spin-done');
+        islandEl.textContent = ISLAND_LABELS[finalTeam];
+        islandEl.className = 'spin-island island-' + finalTeam + ' spin-final';
+        setTimeout(() => {
+          finalPlayer.team = finalTeam;
+          save(); render();
+          overlay.classList.remove('open');
+          el('assignOneBtn').disabled = false;
+          spinRunning = false;
+        }, 850);
+      }
+    }
+    tick();
+  }
+
   function assignFour() {
     const unassigned = shuffle(players.filter(p => p.team === null));
     if (unassigned.length < 4) {
@@ -724,14 +807,49 @@
     const div = document.createElement('div');
     div.className = 'player' + (p.alive ? '' : ' dead');
     div.innerHTML = `
-      <span class="heart">&#10084;</span>
-      <span class="name" title="Klik om levend/dood te wisselen">${escapeHtml(p.name)}</span>
+      <span class="heart" title="Klik om levend/dood te wisselen">&#10084;</span>
+      <span class="name" title="Klik om eiland te wijzigen of te verwijderen">${escapeHtml(p.name)}</span>
       <button class="remove" title="Verwijderen">×</button>
     `;
-    div.querySelector('.name').addEventListener('click', () => toggleAlive(p.id));
+    div.querySelector('.heart').addEventListener('click', () => toggleAlive(p.id));
+    div.querySelector('.name').addEventListener('click', () => openPlayerModal(p.id));
     div.querySelector('.remove').addEventListener('click', () => removePlayer(p.id));
     return div;
   }
+
+  /* ===== Speler-menu: eiland wijzigen of verwijderen ===== */
+  function openPlayerModal(id) {
+    const p = players.find(pl => pl.id === id);
+    if (!p) return;
+    el('playerModalName').textContent = p.name;
+    const wrap = el('playerModalIslands');
+    wrap.innerHTML = '';
+    TEAMS.forEach(t => {
+      const btn = document.createElement('button');
+      btn.className = 'island-' + t + (p.team === t ? ' current' : '');
+      btn.textContent = ISLAND_LABELS[t];
+      btn.addEventListener('click', () => {
+        p.team = t;
+        save(); render();
+        closePlayerModal();
+      });
+      wrap.appendChild(btn);
+    });
+    el('playerModalDelete').onclick = () => {
+      removePlayer(p.id);
+      closePlayerModal();
+    };
+    el('playerModalOverlay').classList.add('open');
+  }
+
+  function closePlayerModal() {
+    el('playerModalOverlay').classList.remove('open');
+  }
+
+  el('playerModalClose').addEventListener('click', closePlayerModal);
+  el('playerModalOverlay').addEventListener('click', e => {
+    if (e.target === el('playerModalOverlay')) closePlayerModal();
+  });
 
   function escapeHtml(s) {
     const d = document.createElement('div');
@@ -791,97 +909,12 @@
   });
 
   el('assignBtn').addEventListener('click', assignTeams);
-  el('assignOneBtn').addEventListener('click', assignOne);
+  el('assignOneBtn').addEventListener('click', showSpinAndAssignOne);
   el('assignFourBtn').addEventListener('click', assignFour);
   el('resetTeamsBtn').addEventListener('click', resetTeams);
   el('clearAllBtn').addEventListener('click', () => {
     if (confirm('Weet je zeker dat je alle spelers en teams wilt wissen?')) clearAll();
   });
-
-  let timerInterval = null;
-  const secondsUntilLaunch = Math.floor((LAUNCH_DATE.getTime() - Date.now()) / 1000);
-  const defaultSeconds = secondsUntilLaunch > 0 ? secondsUntilLaunch : 10 * 60;
-  let totalSeconds = defaultSeconds;
-  let secondsLeft = defaultSeconds;
-  const RING_CIRCUMFERENCE = 326.7;
-
-  function formatTime(s) {
-    s = Math.max(0, s);
-    const days = Math.floor(s / 86400);
-    const hours = Math.floor((s % 86400) / 3600);
-    const m = Math.floor((s % 3600) / 60);
-    const sec = s % 60;
-    if (days > 0) {
-      return `${days}d ${String(hours).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-    }
-    if (hours > 0) {
-      return `${String(hours).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-    }
-    return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
-  }
-
-  function updateTimerDisplay() {
-    const s = Math.max(secondsLeft, 0);
-    const displayEl = el('timerDisplay');
-    displayEl.textContent = formatTime(s);
-    displayEl.classList.toggle('long-format', s >= 3600);
-    el('timerBox').classList.toggle('done', secondsLeft <= 0);
-    const ratio = totalSeconds > 0 ? Math.max(0, secondsLeft) / totalSeconds : 0;
-    el('ringProgress').style.strokeDashoffset = RING_CIRCUMFERENCE * (1 - ratio);
-  }
-
-  function setPlayingState(playing) {
-    const btn = el('timerStart');
-    el('playIcon').style.display = playing ? 'none' : '';
-    el('pauseIcon').style.display = playing ? '' : 'none';
-    btn.classList.toggle('playing', playing);
-    btn.title = playing ? 'Pauze' : 'Start';
-  }
-
-  el('timerStart').addEventListener('click', () => {
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      setPlayingState(false);
-      return;
-    }
-    if (secondsLeft <= 0) secondsLeft = totalSeconds;
-    setPlayingState(true);
-    timerInterval = setInterval(() => {
-      secondsLeft--;
-      updateTimerDisplay();
-      if (secondsLeft <= 0) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-        setPlayingState(false);
-      }
-    }, 1000);
-  });
-
-  el('timerReset').addEventListener('click', () => {
-    clearInterval(timerInterval);
-    timerInterval = null;
-    setPlayingState(false);
-    secondsLeft = totalSeconds;
-    updateTimerDisplay();
-  });
-
-  function adjustMinutes(delta) {
-    if (timerInterval) return;
-    totalSeconds = Math.max(60, totalSeconds + delta * 60);
-    secondsLeft = totalSeconds;
-    updateTimerDisplay();
-  }
-  function adjustDays(delta) {
-    if (timerInterval) return;
-    totalSeconds = Math.max(60, totalSeconds + delta * 86400);
-    secondsLeft = totalSeconds;
-    updateTimerDisplay();
-  }
-  el('timerMinus').addEventListener('click', () => adjustMinutes(-1));
-  el('timerPlus').addEventListener('click', () => adjustMinutes(1));
-  el('timerMinusDay').addEventListener('click', () => adjustDays(-1));
-  el('timerPlusDay').addEventListener('click', () => adjustDays(1));
 
   function initSnow() {
     const field = el('sceneSnow');
@@ -977,7 +1010,6 @@
   }
 
   initLock();
-  updateTimerDisplay();
   initSnow();
   load();
 })();
